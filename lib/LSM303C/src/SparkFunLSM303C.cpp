@@ -1009,3 +1009,38 @@ status_t LSM303C::ACC_GetAccRaw(AxesRaw_t& buff)
 
   return IMU_SUCCESS;
 }
+
+
+status_t LSM303C::WhoAmIAccel(void) {
+	uint8_t who;
+	imu.I2C_ByteRead(ACC_I2C_ADDR, ACC_WHO_AM_I, who&);
+	
+	if (who == 0b01000001) {
+		SerialUSB.println("Who Am I check successful");
+		return IMU_SUCCESS;
+	}
+	else {
+		SerialUSB.print("Who Am I check failed: ");
+		SerialUSB.println(who, HEX);
+		return IMU_HW_ERROR;
+	}
+}
+
+
+status_t LSM303C::WhoAmIMag(void) {
+	uint8_t who;
+	imu.I2C_ByteRead(MAG_I2C_ADDR, MAG_WHO_AM_I, who&);
+
+	if (who == 0b00111101) {
+		SerialUSB.println("Who Am I check successful");
+		return IMU_SUCCESS;
+	}
+	else {
+		SerialUSB.print("Who Am I check failed: ");
+		SerialUSB.println(who, HEX);
+		return IMU_HW_ERROR;
+	}
+}
+
+}
+

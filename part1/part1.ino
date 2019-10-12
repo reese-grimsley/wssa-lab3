@@ -13,6 +13,9 @@ TaskHandle_t magHandle, readHandle;
 
 long samp_period = 25; //ms
 
+void threadMag(void* arg);
+void threadRead(void* arg);
+
 void threadMag(void* arg) {
   while(1) {
     vTaskResume(readHandle);
@@ -66,6 +69,7 @@ void threadRead(void* arg) {
 }
 
 
+
 void setup() {
   // put your setup code here, to run once:
   SerialUSB.begin(9600);
@@ -80,6 +84,11 @@ void setup() {
 
   if (imu.begin())
     while(1);
+
+  if (imu.WhoAmIMag() || WhoAmIAccel()) {
+	SerialUSB.println("Failed to read WHO_AM_I values correctly");
+	while(1);
+  }
 
   SerialUSB.println("IMU configured, now setup RTOS tasks and queue");
 
