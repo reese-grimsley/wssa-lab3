@@ -88,7 +88,7 @@ void setup() {
   if (imu.begin())
     while(1);
 
-  if (imu.WhoAmIMag() || WhoAmIAccel()) {
+  if (imu.WhoAmIMag() || imu.WhoAmIAccel()) {
 	SerialUSB.println("Failed to read WHO_AM_I values correctly");
 	while(1);
   }
