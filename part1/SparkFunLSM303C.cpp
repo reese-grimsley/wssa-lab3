@@ -41,20 +41,20 @@ status_t LSM303C::begin(InterfaceMode_t im, MAG_DO_t modr, MAG_FS_t mfs,
 
   if (interfaceMode == MODE_SPI)
   {
-//    debug_println("Setting up SPI");
-//    // Setup pins for SPI
-//    // CS & CLK must be outputs DDRxn = 1
-//    bitSet(DIR_REG, CSBIT_MAG);
-//    bitSet(DIR_REG, CSBIT_XL);
-//    bitSet(DIR_REG, CLKBIT);
-//    // Deselect SPI chips
-//    bitSet(CSPORT_MAG, CSBIT_MAG);
-//    bitSet(CSPORT_XL, CSBIT_XL);
-//    // Clock polarity (CPOL) = 1
-//    bitSet(CLKPORT, CLKBIT);
-//    // SPI Serial Interface Mode (SIM) bits must be set
-//    SPI_WriteByte(ACC, ACC_CTRL4, 0b111);
-//    SPI_WriteByte(MAG, MAG_CTRL_REG3, _BV(2));
+    debug_println("Setting up SPI");
+    // Setup pins for SPI
+    // CS & CLK must be outputs DDRxn = 1
+    bitSet(DIR_REG, CSBIT_MAG);
+    bitSet(DIR_REG, CSBIT_XL);
+    bitSet(DIR_REG, CLKBIT);
+    // Deselect SPI chips
+    bitSet(CSPORT_MAG, CSBIT_MAG);
+    bitSet(CSPORT_XL, CSBIT_XL);
+    // Clock polarity (CPOL) = 1
+    bitSet(CLKPORT, CLKBIT);
+    // SPI Serial Interface Mode (SIM) bits must be set
+    SPI_WriteByte(ACC, ACC_CTRL4, 0b111);
+    SPI_WriteByte(MAG, MAG_CTRL_REG3, _BV(2));
   }
   else
   {
@@ -650,8 +650,8 @@ status_t LSM303C::MAG_ReadReg(MAG_REG_t reg, uint8_t& data)
   }
   else if (interfaceMode == MODE_SPI)
   {
-//    data = SPI_ReadByte(MAG, reg);
-//    ret = IMU_SUCCESS;
+    data = SPI_ReadByte(MAG, reg);
+    ret = IMU_SUCCESS;
   }
   else
   {
@@ -672,7 +672,7 @@ uint8_t  LSM303C::MAG_WriteReg(MAG_REG_t reg, uint8_t data)
   }
   else if (interfaceMode == MODE_SPI)
   {
-//    ret = SPI_WriteByte(MAG, reg, data);
+    ret = SPI_WriteByte(MAG, reg, data);
   }
   else
   {
@@ -694,8 +694,8 @@ status_t LSM303C::ACC_ReadReg(ACC_REG_t reg, uint8_t& data)
   }
   else if (interfaceMode == MODE_SPI)
   {
-//    data = SPI_ReadByte(ACC, reg);
-//    ret = IMU_SUCCESS;
+    data = SPI_ReadByte(ACC, reg);
+    ret = IMU_SUCCESS;
   }
   else
   {
@@ -718,10 +718,10 @@ uint8_t  LSM303C::ACC_WriteReg(ACC_REG_t reg, uint8_t data)
   {
     ret = I2C_ByteWrite(ACC_I2C_ADDR, reg, data);
   }
-//  else if (interfaceMode == MODE_SPI)
-//  {
-//    ret = SPI_WriteByte(ACC, reg, data);
-//  }
+  else if (interfaceMode == MODE_SPI)
+  {
+    ret = SPI_WriteByte(ACC, reg, data);
+  }
   else
   {
     ret = IMU_GENERIC_ERROR;
@@ -731,146 +731,146 @@ uint8_t  LSM303C::ACC_WriteReg(ACC_REG_t reg, uint8_t data)
 }
 
 // This function uses bit manibulation for higher speed & smaller code
-//uint8_t LSM303C::SPI_ReadByte(CHIP_t chip, uint8_t data)
-//{
-//  debug_print("Reading register 0x");
-//  debug_printlns(data, HEX);
-//  uint8_t counter;
-//
-//  // Set the read/write bit (bit 7) to do a read
-//  data |= _BV(7);
-//
-//  // Set data pin to output
-//  bitSet(DIR_REG, DATABIT);
-// 
-//  noInterrupts();
-//
-//  // Select the chip & deselect the other
-//  switch (chip)
-//  {
-//  case MAG:
-//    bitClear(CSPORT_MAG, CSBIT_MAG);
-//    bitSet(CSPORT_XL, CSBIT_XL);
-//    break;
-//  case ACC:
-//    bitClear(CSPORT_XL, CSBIT_XL);
-//    bitSet(CSPORT_MAG, CSBIT_MAG);
-//    break;
-//  }
-//
-//  // Shift out 8-bit address
-//  for(counter = 8; counter; counter--)
-//  {
-//    bitWrite(DATAPORTO, DATABIT, data & 0x80);
-//    // Data is setup, so drop clock edge
-//    bitClear(CLKPORT, CLKBIT);
-//    bitSet(CLKPORT, CLKBIT);
-//    // Shift off sent bit
-//    data <<= 1;
-//  }
-//  
-//  // Switch data pin to input (0 = INPUT)
-//  bitClear(DIR_REG, DATABIT);
-//
-//  // Shift in register data from address
-//  for(counter = 8; counter; counter--)
-//  {
-//    // Shift data to the left.  Remains 0 after first shift
-//    data <<= 1;
-//
-//    bitClear(CLKPORT, CLKBIT);
-//    // Sample on rising egde
-//    bitSet(CLKPORT, CLKBIT);
-//    if (bitRead(DATAPORTI, DATABIT))
-//    {
-//      data |= 0x01;
-//    }
-//  }
-//
-//  // Unselect chip
-//  switch (chip)
-//  {
-//  case MAG:
-//    bitSet(CSPORT_MAG, CSBIT_MAG);
-//    break;
-//  case ACC:
-//    bitSet(CSPORT_XL, CSBIT_XL);
-//    break;
-//  }
-//
-//  interrupts();
-//
-//  return(data);
-//}
+uint8_t LSM303C::SPI_ReadByte(CHIP_t chip, uint8_t data)
+{
+  debug_print("Reading register 0x");
+  debug_printlns(data, HEX);
+  uint8_t counter;
+
+  // Set the read/write bit (bit 7) to do a read
+  data |= _BV(7);
+
+  // Set data pin to output
+  bitSet(DIR_REG, DATABIT);
+ 
+  noInterrupts();
+
+  // Select the chip & deselect the other
+  switch (chip)
+  {
+  case MAG:
+    bitClear(CSPORT_MAG, CSBIT_MAG);
+    bitSet(CSPORT_XL, CSBIT_XL);
+    break;
+  case ACC:
+    bitClear(CSPORT_XL, CSBIT_XL);
+    bitSet(CSPORT_MAG, CSBIT_MAG);
+    break;
+  }
+
+  // Shift out 8-bit address
+  for(counter = 8; counter; counter--)
+  {
+    bitWrite(DATAPORTO, DATABIT, data & 0x80);
+    // Data is setup, so drop clock edge
+    bitClear(CLKPORT, CLKBIT);
+    bitSet(CLKPORT, CLKBIT);
+    // Shift off sent bit
+    data <<= 1;
+  }
+  
+  // Switch data pin to input (0 = INPUT)
+  bitClear(DIR_REG, DATABIT);
+
+  // Shift in register data from address
+  for(counter = 8; counter; counter--)
+  {
+    // Shift data to the left.  Remains 0 after first shift
+    data <<= 1;
+
+    bitClear(CLKPORT, CLKBIT);
+    // Sample on rising egde
+    bitSet(CLKPORT, CLKBIT);
+    if (bitRead(DATAPORTI, DATABIT))
+    {
+      data |= 0x01;
+    }
+  }
+
+  // Unselect chip
+  switch (chip)
+  {
+  case MAG:
+    bitSet(CSPORT_MAG, CSBIT_MAG);
+    break;
+  case ACC:
+    bitSet(CSPORT_XL, CSBIT_XL);
+    break;
+  }
+
+  interrupts();
+
+  return(data);
+}
 
 
 
 
 
 // This function uses bit manibulation for higher speed & smaller code
-//status_t LSM303C::SPI_WriteByte(CHIP_t chip, uint8_t reg, uint8_t data)
-//{
-//  debug_print("Writing 0x");
-//  debug_prints(data, HEX);
-//  debug_prints(" to register 0x");
-//  debug_printlns(reg, HEX);
-//
-//  uint8_t counter;
-//  uint16_t twoBytes;
-//
-//  // Clear the read/write bit (bit 7) to do a write
-//  reg &= ~_BV(7);
-//  twoBytes = reg << 8 | data;
-//
-//  // Set data pin to output
-//  bitSet(DIR_REG, DATABIT);
-// 
-//  noInterrupts();
-//
-//  // Select the chip & deselect the other
-//  switch (chip)
-//  {
-//  case MAG:
-//    bitClear(CSPORT_MAG, CSBIT_MAG);
-//    bitSet(CSPORT_XL, CSBIT_XL);
-//    break;
-//  case ACC:
-//    bitClear(CSPORT_XL, CSBIT_XL);
-//    bitSet(CSPORT_MAG, CSBIT_MAG);
-//    break;
-//  }
-//
-//  // Shift out 8-bit address & 8-bit data
-//  for(counter = 16; counter; counter--)
-//  {
-//    bitWrite(DATAPORTO, DATABIT, twoBytes & 0x8000);
-//    
-//    // Data is setup, so drop clock edge
-//    bitClear(CLKPORT, CLKBIT);
-//    bitSet(CLKPORT, CLKBIT);
-//    // Shift off sent bit
-//    twoBytes <<= 1;
-//  }
-//  
-//  // Unselect chip
-//  switch (chip)
-//  {
-//  case MAG:
-//    bitSet(CSPORT_MAG, CSBIT_MAG);
-//    break;
-//  case ACC:
-//    bitSet(CSPORT_XL, CSBIT_XL);
-//    break;
-//  }
-// 
-//  interrupts();
-//
-//  // Set data pin to input
-//  bitClear(DIR_REG, DATABIT);
-//
-//  // Is there a way to verify true success?
-//  return IMU_SUCCESS;
-//}
+status_t LSM303C::SPI_WriteByte(CHIP_t chip, uint8_t reg, uint8_t data)
+{
+  debug_print("Writing 0x");
+  debug_prints(data, HEX);
+  debug_prints(" to register 0x");
+  debug_printlns(reg, HEX);
+
+  uint8_t counter;
+  uint16_t twoBytes;
+
+  // Clear the read/write bit (bit 7) to do a write
+  reg &= ~_BV(7);
+  twoBytes = reg << 8 | data;
+
+  // Set data pin to output
+  bitSet(DIR_REG, DATABIT);
+ 
+  noInterrupts();
+
+  // Select the chip & deselect the other
+  switch (chip)
+  {
+  case MAG:
+    bitClear(CSPORT_MAG, CSBIT_MAG);
+    bitSet(CSPORT_XL, CSBIT_XL);
+    break;
+  case ACC:
+    bitClear(CSPORT_XL, CSBIT_XL);
+    bitSet(CSPORT_MAG, CSBIT_MAG);
+    break;
+  }
+
+  // Shift out 8-bit address & 8-bit data
+  for(counter = 16; counter; counter--)
+  {
+    bitWrite(DATAPORTO, DATABIT, twoBytes & 0x8000);
+    
+    // Data is setup, so drop clock edge
+    bitClear(CLKPORT, CLKBIT);
+    bitSet(CLKPORT, CLKBIT);
+    // Shift off sent bit
+    twoBytes <<= 1;
+  }
+  
+  // Unselect chip
+  switch (chip)
+  {
+  case MAG:
+    bitSet(CSPORT_MAG, CSBIT_MAG);
+    break;
+  case ACC:
+    bitSet(CSPORT_XL, CSBIT_XL);
+    break;
+  }
+ 
+  interrupts();
+
+  // Set data pin to input
+  bitClear(DIR_REG, DATABIT);
+
+  // Is there a way to verify true success?
+  return IMU_SUCCESS;
+}
 
 
 
@@ -879,16 +879,16 @@ uint8_t  LSM303C::I2C_ByteWrite(I2C_ADDR_t slaveAddress, uint8_t reg,
     uint8_t data)
 {
   uint8_t ret = IMU_GENERIC_ERROR;
-  Wire1.beginTransmission(slaveAddress);  // Initialize the Tx buffer
+  Wire.beginTransmission(slaveAddress);  // Initialize the Tx buffer
   // returns num bytes written
-  if (Wire1.write(reg))
+  if (Wire.write(reg))
   {
-    ret = Wire1.write(data);
+    ret = Wire.write(data);
     if (ret)
     {
       debug_print("Wrote: 0x");
       debug_printlns(data, HEX);
-      switch (Wire1.endTransmission())
+      switch (Wire.endTransmission())
       {
       case 0:
         ret = IMU_SUCCESS;
@@ -921,10 +921,10 @@ status_t LSM303C::I2C_ByteRead(I2C_ADDR_t slaveAddress, uint8_t reg,
   debug_prints(slaveAddress, HEX);
   debug_prints(", register 0x");
   debug_printlns(reg, HEX);
-  Wire1.beginTransmission(slaveAddress); // Initialize the Tx buffer
-  if (Wire1.write(reg))  // Put slave register address in Tx buff
+  Wire.beginTransmission(slaveAddress); // Initialize the Tx buffer
+  if (Wire.write(reg))  // Put slave register address in Tx buff
   {
-    if (Wire1.endTransmission(false))  // Send Tx, send restart to keep alive
+    if (Wire.endTransmission(false))  // Send Tx, send restart to keep alive
     {
       debug_println("Error: I2C buffer didn't get sent!");
       debug_print("Slave address: 0x");
@@ -934,9 +934,9 @@ status_t LSM303C::I2C_ByteRead(I2C_ADDR_t slaveAddress, uint8_t reg,
 
       ret = IMU_HW_ERROR;
     }
-    else if (Wire1.requestFrom(slaveAddress, 1))
+    else if (Wire.requestFrom(slaveAddress, 1))
     {
-      data = Wire1.read();
+      data = Wire.read();
       debug_print("Read: 0x");
       debug_printlns(data, HEX);
       ret = IMU_SUCCESS;
@@ -1009,3 +1009,38 @@ status_t LSM303C::ACC_GetAccRaw(AxesRaw_t& buff)
 
   return IMU_SUCCESS;
 }
+
+
+status_t LSM303C::WhoAmIAccel(void) {
+	uint8_t who;
+	imu.I2C_ByteRead(ACC_I2C_ADDR, ACC_WHO_AM_I, who&);
+	
+	if (who == 0b01000001) {
+		SerialUSB.println("Who Am I check successful");
+		return IMU_SUCCESS;
+	}
+	else {
+		SerialUSB.print("Who Am I check failed: ");
+		SerialUSB.println(who, HEX);
+		return IMU_HW_ERROR;
+	}
+}
+
+
+status_t LSM303C::WhoAmIMag(void) {
+	uint8_t who;
+	imu.I2C_ByteRead(MAG_I2C_ADDR, MAG_WHO_AM_I, who&);
+
+	if (who == 0b00111101) {
+		SerialUSB.println("Who Am I check successful");
+		return IMU_SUCCESS;
+	}
+	else {
+		SerialUSB.print("Who Am I check failed: ");
+		SerialUSB.println(who, HEX);
+		return IMU_HW_ERROR;
+	}
+}
+
+}
+
