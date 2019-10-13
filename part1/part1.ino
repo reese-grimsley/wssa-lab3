@@ -73,14 +73,17 @@ void threadRead(void* arg) {
 void setup() {
   // put your setup code here, to run once:
   SerialUSB.begin(9600);
-  SerialUSB.println("Wire and Serial configured");
+
+  while (~Serial);
+  SerialUSB.println("Serial configured");
   
   Wire1.begin();
   Wire1.setClock(400000L);
+  SerialUSB.println("Wire1 configured");
 
-  while(1) {
-    SerialUSB.println("test");
-  }
+//  while(1) {
+//    SerialUSB.println("test");
+//  }
 
   if (imu.begin())
     while(1);
