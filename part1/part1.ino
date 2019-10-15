@@ -74,7 +74,7 @@ void setup() {
   // put your setup code here, to run once:
   SerialUSB.begin(9600);
 
-  while (~Serial);
+  while (!SerialUSB);
   SerialUSB.println("Serial configured");
   
   Wire1.begin();
@@ -85,8 +85,17 @@ void setup() {
 //    SerialUSB.println("test");
 //  }
 
-  if (imu.begin())
-    while(1);
+  if (imu.begin() != IMU_SUCCESS) {
+    SerialUSB.print("Error setting up IMU");
+    SerialUSB.println(imu.begin());
+    while(1) {
+      //SerialUSB.println("Issue setting up imu, beep boop");
+    }
+    
+  }
+
+  SerialUSB.println("IMU configured correctly");
+  while(1);
 
   if (imu.WhoAmIMag() || imu.WhoAmIAccel()) {
 	SerialUSB.println("Failed to read WHO_AM_I values correctly");

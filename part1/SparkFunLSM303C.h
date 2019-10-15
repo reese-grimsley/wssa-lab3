@@ -37,8 +37,8 @@ static const char MERROR[] = "\nMag Error";
 class LSM303C : public SparkFunIMU
 {
   public:
-    status_t WhoAmIAccel(void);
-    status_t WhoAmIMag(void);
+    status_t WhoAmIAccel();
+    status_t WhoAmIMag();
   
     // These are the only methods are the only methods the user can use w/o mods
     ~LSM303C()  =  default;

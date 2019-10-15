@@ -85,6 +85,8 @@ status_t LSM303C::begin(InterfaceMode_t im, MAG_DO_t modr, MAG_FS_t mfs,
   // Initialize accelerometer output data rate
   successes += ACC_SetODR(aodr);
 
+  SerialUSB.println(successes);
+
   return (successes == IMU_SUCCESS) ? IMU_SUCCESS : IMU_HW_ERROR;
 }
 
@@ -1010,9 +1012,11 @@ status_t LSM303C::ACC_GetAccRaw(AxesRaw_t& buff)
   return IMU_SUCCESS;
 }
 
-status_t LSM303C::WhoAmIAccel(void) {
-	uint8_t who;
-	imu.I2C_ByteRead(ACC_I2C_ADDR, ACC_WHO_AM_I, who&);
+status_t LSM303C::WhoAmIAccel() 
+{
+	uint8_t who = 0;
+  
+	I2C_ByteRead(ACC_I2C_ADDR, ACC_WHO_AM_I, who);
 
 	if (who == 0b01000001) {
 		SerialUSB.println("Who Am I check successful");
@@ -1026,9 +1030,9 @@ status_t LSM303C::WhoAmIAccel(void) {
 }
 
 
-status_t LSM303C::WhoAmIMag(void) {
+status_t LSM303C::WhoAmIMag() {
 	uint8_t who;
-	imu.I2C_ByteRead(MAG_I2C_ADDR, MAG_WHO_AM_I, who&);
+	I2C_ByteRead(MAG_I2C_ADDR, MAG_WHO_AM_I, who);
 
 	if (who == 0b00111101) {
 		SerialUSB.println("Who Am I check successful");
