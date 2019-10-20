@@ -19,6 +19,11 @@ void setup() {
   // Initialize SPI
   SPI.begin();
 
+  delay(1000);
+  
+  uint8_t whoami = spi_read_cmd(FXOS8700CQ_WHO_AM_I);
+  SerialUSB.println(whoami, HEX);
+
   // Initialize sensor
   sensor = FXOS8700CQ();
   sensor.init();
