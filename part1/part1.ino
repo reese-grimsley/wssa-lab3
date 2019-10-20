@@ -11,7 +11,7 @@ LSM303C imu;
 QueueHandle_t magQueue;
 TaskHandle_t magHandle, readHandle;
 
-long samp_period = 1000; //ms
+long samp_period = 25; //ms
 
 void threadMag(void* arg);
 void threadRead(void* arg);
