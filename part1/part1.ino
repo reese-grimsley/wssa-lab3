@@ -11,13 +11,14 @@ LSM303C imu;
 QueueHandle_t magQueue;
 TaskHandle_t magHandle, readHandle;
 
-long samp_period = 25; //ms
+long samp_period = 1000; //ms
 
 void threadMag(void* arg);
 void threadRead(void* arg);
 
 void threadMag(void* arg) {
   while(1) {
+    SerialUSB.println("Start Magnetometer read");
     vTaskResume(readHandle);
     float mag_value;
     //would check if data was available before doing this, but driver does not expose this
@@ -48,9 +49,10 @@ void threadMag(void* arg) {
 
 void threadRead(void* arg) {
   while (1) {
+    SerialUSB.println("Start queue read task");
     static float magX, magY, magZ;
     
-    if (uxQueueMessagesWaiting(magQueue) == 0) {
+    if (uxQueueMessagesWaiting(magQueue)) {
       xQueueReceive(magQueue, (void*) &magX, 0);
       xQueueReceive(magQueue, (void*) &magY, 0);
       xQueueReceive(magQueue, (void*) &magZ, 0);
@@ -94,9 +96,6 @@ void setup() {
     
   }
 
-  SerialUSB.println("IMU configured correctly");
-  while(1);
-
   if (imu.WhoAmIMag() || imu.WhoAmIAccel()) {
 	SerialUSB.println("Failed to read WHO_AM_I values correctly");
 	while(1);
@@ -124,6 +123,7 @@ void setup() {
   }
 
   SerialUSB.println("Starting Scheduler");
+  vTaskStartScheduler();
     
 }
 
