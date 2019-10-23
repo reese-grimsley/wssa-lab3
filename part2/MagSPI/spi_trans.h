@@ -3,7 +3,7 @@
 #include<math.h>
 #include <stdint.h>
 
-#define SPI_DEBUG 1
+//#define SPI_DEBUG 1
 
 // Chip Select Pin for SPI
 #define CS_PIN 51

@@ -196,7 +196,7 @@ class FXOS8700CQ {
 				void active(void);			  // Put FXOS8700CQ in active mode
 
 				// Read sensor data
-				void readMagData(void);   // Read the magnetometer data
+				void readMagData();   // Read the magnetometer data
 
 				// Miscellaneous Functions
 				void checkWhoAmI(void);   // Read the Who Am I register

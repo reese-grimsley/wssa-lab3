@@ -19,17 +19,31 @@ void setup() {
   // Initialize SPI
   SPI.begin();
 
-  delay(1000);
-  
-  uint8_t whoami = spi_read_cmd(FXOS8700CQ_WHO_AM_I);
-  SerialUSB.println(whoami, HEX);
-
   // Initialize sensor
   sensor = FXOS8700CQ();
   sensor.init();
+  delay(10); //delay to initialize fully
+  
+  // check WhoAmI
+  sensor.checkWhoAmI();
 
 }
 
 void loop() {
 //Fill code here to read from chip
+  sensor.readMagData();
+
+  SerialUSB.print("X value = "); 
+  SerialUSB.println(sensor.magData.x);
+  
+  SerialUSB.print("Y value = "); 
+  SerialUSB.println(sensor.magData.y);
+  
+  SerialUSB.print("Z value = "); 
+  SerialUSB.println(sensor.magData.z);
+
+  SerialUSB.println("");
+
+  delay(2000);
+
 }
